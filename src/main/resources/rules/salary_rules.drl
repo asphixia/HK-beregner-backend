@@ -1,0 +1,56 @@
+package rules
+
+import com.example.hksalarycalculatorbackend.model.Employee
+import com.example.hksalarycalculatorbackend.model.Agreement
+import com.example.hksalarycalculatorbackend.model.Plan;
+import com.example.hksalarycalculatorbackend.model.HKMemberRole;
+
+// Full-time employment rule
+rule "Full-time employment"
+when
+    $employee: Employee(
+        hkMemberRole == HKMemberRole.STOREWORKER,
+        hoursWorked > 0
+    )
+then
+    // Calculate if overtime is applicable
+    if ($employee.getAverageWeeklyHours() > 37) {
+        $employee.setOvertimeEligible(true);
+        System.out.println("Full-time employee eligible for overtime.");
+    } else {
+        $employee.setOvertimeEligible(false);
+        System.out.println("Full-time employee not eligible for overtime.");
+    }
+end
+
+// Part-time employment rule
+rule "Part-time employment"
+when
+    $employee: Employee(
+        hkMemberRole == HKMemberRole.STUDENT,
+        hoursWorked > 0,
+        averageWeeklyHours <= 20
+    )
+then
+    // Part-time employees do not qualify for overtime by default
+    $employee.setOvertimeEligible(false);
+    System.out.println("Part-time employee processed.");
+end
+
+// Middle Manager employment rule
+rule "Middle Manager employment"
+when
+    $employee: Employee(
+        hkMemberRole == HKMemberRole.MIDDLEMANAGER,
+        hoursWorked > 0
+    )
+then
+    // Middle managers may qualify for overtime
+    if ($employee.getAverageWeeklyHours() > 37) {
+        $employee.setOvertimeEligible(true);
+        System.out.println("Middle manager eligible for overtime.");
+    } else {
+        $employee.setOvertimeEligible(false);
+        System.out.println("Middle manager not eligible for overtime.");
+    }
+end

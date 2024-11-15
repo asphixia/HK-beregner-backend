@@ -12,7 +12,6 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @ToString
 @Entity
 @Table(name = "rules")
