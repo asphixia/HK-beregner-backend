@@ -9,3 +9,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
+
+  jwt:
+    secret: "" # use the SecretKeyGenerator to generate a secret key and paste it here
+    expiration: 100000 # 7 days in milliseconds
