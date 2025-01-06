@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydatabase
+    username: myuser
+    password: mypassword
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+
+  jwt:
+    secret: "STjLg5q+33OD2JauZaKWifSKt6+5aKQvy8VrIWTfxOavl8Ha1SkDwFmesjaw2OsWC0zJJoNKmouZlU7QVF3fow==" # use the SecretKeyGenerator to generate a secret key and paste it here
+    expiration: 100000 # 7 days in milliseconds
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+logging:
+  level:
+    org.drools: DEBUG
