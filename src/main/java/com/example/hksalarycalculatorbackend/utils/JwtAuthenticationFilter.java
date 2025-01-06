@@ -28,8 +28,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        final String authorizationHeader = request.getHeader("Authorization");
+        logger.info("Processing request to: " + request.getServletPath());
 
+        final String authorizationHeader = request.getHeader("Authorization");
         String username = null;
         String jwt = null;
 
@@ -37,8 +38,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             jwt = authorizationHeader.substring(7);
             try {
                 username = jwtUtil.extractUsername(jwt);
+                logger.info("Extracted username: " + username);
             } catch (Exception e) {
-                logger.error("Failed to extract username from JWT token: {}");
+                logger.error("Failed to extract username from JWT token", e);
             }
         }
 
@@ -55,4 +57,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         chain.doFilter(request, response);
     }
+
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        logger.info("Processing filter exclusion for path: " + path);
+        return path.startsWith("/actuator") ||
+                path.equals("/api/login") ||
+                path.equals("/api/calculatexsalary") ||
+                path.equals("/api/rules") ||
+                path.equals("/api/users/getALlUsers") ||
+                path.equals("/api/users/createUser");
+
+    }
+
+
+
 }

@@ -1,0 +1,121 @@
+@startuml
+
+' Entiteter
+class Rule {
+    - id: Long
+    - ruleName: String
+    - conditions: String
+    - actions: String
+    - status: boolean
+}
+
+class RuleDTO {
+    - ruleName: String
+    - conditions: String
+    - actions: String
+    - status: boolean
+}
+
+class AdminAction {
+    - id: Long
+    - actionType: AdminActionType
+    - timestamp: LocalDateTime
+}
+
+enum AdminActionType {
+    CREATE
+    UPDATE
+    DELETE
+}
+
+enum Status {
+    ACTIVE
+    INACTIVE
+}
+
+' User og Login
+class User {
+    - id: Long
+    - username: String
+    - password: String
+    - role: String
+}
+
+class LoginRequest {
+    - username: String
+    - password: String
+}
+
+class LoginResponse {
+    - token: String
+    - message: String
+}
+
+' Services
+class RuleService {
+    - ruleRepository: RuleRepository
+    - droolsConfig: DroolsConfig
+    + getAllRules(): List<Rule>
+    + updateRule(Long id, RuleDTO ruleDTO): Rule
+    + createRule(RuleDTO ruleDTO): Rule
+    + getRuleById(Long id): Rule
+    + deleteRule(Long id): void
+    + validateJson(String json): void
+}
+
+class DroolsConfig {
+    - kieContainer: KieContainer
+    + createOrUpdateKieBase(Iterable<Rule> rules): void
+}
+
+' Repositories
+interface RuleRepository {
+    + findAll(): Iterable<Rule>
+    + findById(Long id): Optional<Rule>
+    + save(Rule rule): Rule
+    + deleteById(Long id): void
+}
+
+interface UserRepository {
+    + findByUsername(String username): Optional<User>
+    + save(User user): User
+}
+
+' Validator
+class RuleValidator {
+    + validateRule(Rule rule): boolean
+}
+
+' Controllers
+class CalculateExpectedPayController {
+    - ruleService: RuleService
+    + calculatePay(CalculatePayRequest request): CalculatePayResponse
+}
+
+class CalculatePayRequest {
+    - employeeId: Long
+    - hoursWorked: Double
+    - hourlyRate: Double
+}
+
+class CalculatePayResponse {
+    - expectedPay: Double
+    - message: String
+}
+
+' Relationer
+RuleService --> RuleRepository : depends on
+RuleService --> DroolsConfig : depends on
+RuleService --> RuleValidator : depends on
+RuleRepository --> Rule : manages
+UserRepository --> User : manages
+RuleDTO --> Rule : maps to
+AdminAction --> AdminActionType : uses
+Rule --> Status : uses
+CalculateExpectedPayController --> RuleService : depends on
+CalculateExpectedPayController --> CalculatePayRequest : uses
+CalculateExpectedPayController --> CalculatePayResponse : returns
+LoginRequest --> User : maps to
+LoginResponse --> User : maps to
+
+@enduml

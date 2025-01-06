@@ -6,42 +6,27 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
+
 @Entity
 @Table(name = "rules")
-
+@Data
 public class Rule {
     @Id
-    @GeneratedValue
-    private UUID ruleId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(nullable = false, name = "rule_name")
+    @Column(name = "rulename", nullable = false)
     private String ruleName;
 
-    @Column(nullable = false, name = "description")
-    private String description;
+    @Column(name = "conditions", columnDefinition = "TEXT")
+    private String conditions;
 
-    @Column(nullable = false, name = "rule_content")
-    private String ruleContent;
+    @Column(name = "actions", columnDefinition = "TEXT")
+    private String actions;
 
-    @Column(nullable = false, name = "status")
-    private Boolean status = true;
-
-    @CreationTimestamp
-    @Column(nullable = false, name = "created_at")
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(nullable = false, name = "last_modified_at")
-    private LocalDateTime lastModifiedAt;
-
-    @Column(nullable = false, name = "version")
-    private Integer version;
-
+    @Column(name = "status", nullable = false)
+    private boolean status = true;
 }

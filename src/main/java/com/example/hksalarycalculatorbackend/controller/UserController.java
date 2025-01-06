@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -21,16 +22,18 @@ public class UserController {
         User createdUser = userService.createUser(user);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
-
+/*
     @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserById(@PathVariable String username){
-        User user = userService.getUserByUuid(username);
+    public ResponseEntity<User> getUserById(@PathVariable UUID id){
+        User user = userService.getUserByUuid(id);
         if(user != null){
             return new ResponseEntity<>(user, HttpStatus.OK);
         }else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+ */
 
     @GetMapping("/getUserByUsername")
     public ResponseEntity<User> getUserByUsername(@RequestParam String username){
@@ -48,13 +51,13 @@ public class UserController {
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
-    @PutMapping("/updateUser/{userId}")
-    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User updatedUser){
-        User user = userService.updateUser(username, updatedUser);
-        if(user != null){
-            return new ResponseEntity<>(user, HttpStatus.OK);
-        }else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @PutMapping("/updateUser/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable UUID id, @RequestBody User updatedUser) {
+        try {
+            User user = userService.updateUser(id, updatedUser);
+            return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 

@@ -1,8 +1,10 @@
 package com.example.hksalarycalculatorbackend.service;
 
+import com.example.hksalarycalculatorbackend.model.Roles;
 import com.example.hksalarycalculatorbackend.model.User;
 import com.example.hksalarycalculatorbackend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,23 +35,21 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public User getUserByUuid(String username){
-        Optional<User> user = Optional.ofNullable(userRepository.findByUsername(username));
+    /*
+    public User getUserByUuid(UUID id){
+        Optional<User> user = Optional.ofNullable(userRepository.findUserByUUID(id));
         return user.orElse(null);
     }
 
-    public User updateUser(String username, User updatedUser){
-        Optional<User> userOptional = Optional.ofNullable(userRepository.findByUsername(username));
-        if(userOptional.isPresent()){
-            User existingUser = userOptional.get();
-            existingUser.setUsername(updatedUser.getUsername());
-            existingUser.setPassword(updatedUser.getPassword());
-            existingUser.setEmail(updatedUser.getEmail());
-            existingUser.setRole(updatedUser.getRole());
-            return userRepository.save(existingUser);
-        }else {
-            return null;
-        }
+     */
+
+    public User updateUser(UUID id, User updatedUser) throws Exception {
+        return userRepository.findById(id).map(user -> {
+            user.setUsername(updatedUser.getUsername());
+            user.setRole(updatedUser.getRole());
+            user.setEmail(updatedUser.getEmail());
+            return userRepository.save(user);
+        }).orElseThrow(() -> new Exception("User with ID " + id + " not found."));
     }
 
     public void deleteUser(String username){
@@ -64,5 +64,13 @@ public class UserService {
         List<User> userList = new ArrayList<>();
         users.forEach(userList::add);
         return userList;
+    }
+    public Roles getUserRole(String username){
+        User user = userRepository.findByUsername(username);
+
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found: " + username);
+        }
+        return user.getRole();
     }
 }

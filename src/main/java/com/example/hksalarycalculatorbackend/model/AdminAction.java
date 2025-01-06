@@ -24,22 +24,21 @@ public class AdminAction {
     @GeneratedValue
     private UUID adminActionId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @Column(name = "username", nullable = false)
     @NotNull
-    private User user;
+    private String username;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "actionType")
     @NotNull
     private AdminActionType adminActionType;
 
+    @Column(nullable = false, name = "ruleName")
+    private String RuleName;
+
     @CreationTimestamp
     @Column(nullable = false, name = "timestamp")
     private LocalDateTime timestamp;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "status")
-    @NotNull
-    private Status status;
+
 }
